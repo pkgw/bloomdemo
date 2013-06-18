@@ -106,7 +106,7 @@ class BloomFilter (object):
 
         if m % 32 != 0:
             raise ValueError ("This lame function can only accept m's that"
-                              " are multuples of 32; I got %d" % m)
+                              " are multiples of 32; I got %d" % m)
         self.m = m
         self.k = k
 
