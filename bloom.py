@@ -59,7 +59,7 @@ k = -ln p / (ln 2)
 
 # Activate "true" division: 1 / 2 = 0.5, not 0. See PEP238.
 from __future__ import division
-import numpy as N
+import numpy as np
 import hashlib
 
 
@@ -110,13 +110,13 @@ class BloomFilter (object):
         self.m = m
         self.k = k
 
-        self.bits = N.zeros (m // 32, dtype=N.uint32)
+        self.bits = np.zeros (m // 32, dtype=np.uint32)
         self.n = 0
         self.funcs = [makeHashFunc (m, i) for i in xrange (k)]
 
 
     def fprate (self):
-        r = (1. - N.exp (-self.k * self.n / self.m))
+        r = (1. - np.exp (-self.k * self.n / self.m))
         r **= self.k
 
         # The following line of code is the bug! I decided to multiply "r" by
@@ -175,10 +175,10 @@ def optimalBloom (fprate, nexpected):
     of data and the number of functions we need using the equations
     given in the module docstring."""
 
-    ln2 = N.log (2)
+    ln2 = np.log (2)
 
-    m = -nexpected * N.log (fprate) / ln2**2
-    m = int (N.ceil (m))
+    m = -nexpected * np.log (fprate) / ln2**2
+    m = int (np.ceil (m))
     # round to nearest larger multiple of 32
     m = (m + 31) & ~0x1F
 
