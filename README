@@ -1,0 +1,4 @@
+The code in this repository implements a data structure known as a "Bloom
+filter." You'll probably never need to use a Bloom filter, but it's a nice
+self-contained piece of code with nontrivial behavior, which makes it great
+for demoing Git!
