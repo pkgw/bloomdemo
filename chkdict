@@ -16,11 +16,7 @@ except ImportError:
 
 import bloom
 
-
-# Poor man's argument handling
-skip_misses = "-s" in sys.argv
-if skip_misses:
-    sys.argv.remove("-s")
+# No arguments taken.
 
 words_to_check = sys.argv[1:]
 
@@ -38,5 +34,5 @@ fp = bf.fprate()
 for word in words_to_check:
     if bf.may_contain(word):
         print(word, "MIGHT BE in the dictionary")
-    elif not skip_misses:
+    else:
         print(word, "is DEFINITELY NOT in the dictionary")
