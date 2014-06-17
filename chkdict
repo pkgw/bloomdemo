@@ -21,6 +21,9 @@ import bloom
 skip_misses = "-s" in sys.argv
 if skip_misses:
     sys.argv.remove("-s")
+say_goodbye = "-g" in sys.argv
+if say_goodbye:
+    sys.argv.remove("-g")
 
 words_to_check = sys.argv[1:]
 
@@ -40,3 +43,6 @@ for word in words_to_check:
         print(word, "MIGHT BE in the dictionary")
     elif not skip_misses:
         print(word, "is DEFINITELY NOT in the dictionary")
+
+if say_goodbye:
+    print("Goodbye.")
