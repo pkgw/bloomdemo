@@ -1,3 +1,7 @@
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2014, 2017 Peter Williams
+# Licensed under the MIT License.
+
 """bloom - a cheesy Bloom filter implementation
 
 This module implements a lame version of a Bloom filter, a simple
@@ -35,7 +39,7 @@ For more information, see
 http://en.wikipedia.org/wiki/Bloom_filter
 
 Here are some equations describing the behavior of Bloom filters.
-Let 
+Let
 
 m = the number of bits in the filter
 k = the number of functions
@@ -44,7 +48,7 @@ p = the false positive rate
 
 Given k, n, m, then
 
-p = (1 - exp (-k * n / m)) ** k
+p = (1 - exp(-k * n / m)) ** k
 
 Given n, m, then the optimal k is
 
@@ -58,12 +62,13 @@ k = -ln p / (ln 2)
 """
 
 # Activate "true" division: 1 / 2 = 0.5, not 0. See PEP238.
-from __future__ import division
+from __future__ import absolute_import, division, print_function
 import numpy as np
 import hashlib
+from six import binary_type
 
 
-def makeHashFunc (m, salt):
+def makeHashFunc(m, salt):
     """Return a *function* that hashes an input value. The function that
     we return takes a string argument and returns an integer between 0 and
     m, noninclusive. Our arguments are m, and a "salt" value that we mix
@@ -74,15 +79,15 @@ def makeHashFunc (m, salt):
     take the simple route; a real implementation would worry a lot more
     about optimizing how this is done."""
 
-    salt = str (salt)
-    
-    def f (value):
+    salt = binary_type(salt)
+
+    def f(value):
         # Get a 20-byte string representing the SHA1 cryptographic
         # hash of the input plus the "salt" string
-        h = hashlib.sha1 ()
-        h.update (salt)
-        h.update (value)
-        digest = h.digest ()
+        h = hashlib.sha1()
+        h.update(salt)
+        h.update(value.encode('utf8'))
+        digest = bytearray(h.digest())
 
         # Convert the digest from a string to an integer modulo
         # m. Python handles bigints automagically so we don't have
@@ -91,32 +96,34 @@ def makeHashFunc (m, salt):
         scale = 1
 
         for b in digest:
-            v = (v + ord (b) * scale) % m
+            v = (v + b * scale) % m
+            print(scale, b)
             scale *= 8
 
+        print('DONE', v)
         return v
 
     return f
 
 
-class BloomFilter (object):
-    def __init__ (self, m, k):
+class BloomFilter(object):
+    def __init__(self, m, k):
         assert m > 0
         assert k > 0
 
         if m % 32 != 0:
-            raise ValueError ("This lame function can only accept m's that"
-                              " are multiples of 32; I got %d" % m)
+            raise ValueError("This lame function can only accept m's that"
+                             " are multiples of 32; I got %d" % m)
         self.m = m
         self.k = k
 
-        self.bits = np.zeros (m // 32, dtype=np.uint32)
+        self.bits = np.zeros(m // 32, dtype=np.uint32)
         self.n = 0
-        self.funcs = [makeHashFunc (m, i) for i in xrange (k)]
+        self.funcs = [makeHashFunc(m, i) for i in range(k)]
 
 
-    def fprate (self):
-        r = (1. - np.exp (-self.k * self.n / self.m))
+    def fprate(self):
+        r = (1. - np.exp(-self.k * self.n / self.m))
         r **= self.k
 
         # The following line of code is the bug! I decided to multiply "r" by
@@ -127,9 +134,9 @@ class BloomFilter (object):
         return r
 
 
-    def add (self, item):
+    def add(self, item):
         for func in self.funcs:
-            n = func (item)
+            n = func(item)
             dword = n // 32
             bit = n % 32
             self.bits[dword] |= (1 << bit)
@@ -137,9 +144,9 @@ class BloomFilter (object):
         self.n += 1
 
 
-    def maycontain (self, item):
+    def maycontain(self, item):
         for func in self.funcs:
-            n = func (item)
+            n = func(item)
             dword = n // 32
             bit = n % 32
 
@@ -149,8 +156,8 @@ class BloomFilter (object):
         return True
 
 
-    def clear (self):
-        self.bits.fill (0)
+    def clear(self):
+        self.bits.fill(0)
 
 
     # These functions allow us to save and load object state
@@ -158,31 +165,31 @@ class BloomFilter (object):
     # is slow, so we'll speed things up by saving and restoring
     # the filter state.
 
-    def __getstate__ (self):
+    def __getstate__(self):
         return self.k, self.n, self.bits
 
 
-    def __setstate__ (self, state):
+    def __setstate__(self, state):
         self.k, self.n, self.bits = state
         self.m = self.bits.size * 32
-        self.funcs = [makeHashFunc (self.m, i) for i in xrange (self.k)]
+        self.funcs = [makeHashFunc(self.m, i) for i in range(self.k)]
 
 
-def optimalBloom (fprate, nexpected):
+def optimalBloom(fprate, nexpected):
     """Create and return a well-optimized Bloom filter given a desired
     false-positive rate and an expected number of items to be added to
     the filter. This involves figuring out the optimal number of bits
     of data and the number of functions we need using the equations
     given in the module docstring."""
 
-    ln2 = np.log (2)
+    ln2 = np.log(2)
 
-    m = -nexpected * np.log (fprate) / ln2**2
-    m = int (np.ceil (m))
+    m = -nexpected * np.log(fprate) / ln2**2
+    m = int(np.ceil(m))
     # round to nearest larger multiple of 32
     m = (m + 31) & ~0x1F
 
     k = ln2 * m / nexpected
-    k = max (int (k), 1)
+    k = max(int(k), 1)
 
-    return BloomFilter (m, k)
+    return BloomFilter(m, k)
