@@ -65,7 +65,7 @@ k = -ln p / (ln 2)
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import hashlib
-from six import binary_type
+from six import PY2, binary_type
 
 
 def make_hash_func(m, salt):
@@ -79,7 +79,9 @@ def make_hash_func(m, salt):
     take the simple route; a real implementation would worry a lot more
     about optimizing how this is done."""
 
-    salt = binary_type(salt)
+    salt = str(salt)
+    if not PY2:
+        salt = salt.encode('utf8')
 
     def f(value):
         # Get a 20-byte string representing the SHA1 cryptographic
@@ -97,10 +99,8 @@ def make_hash_func(m, salt):
 
         for b in digest:
             v = (v + b * scale) % m
-            print(scale, b)
             scale *= 8
 
-        print('DONE', v)
         return v
 
     return f
