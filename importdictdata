@@ -1,18 +1,28 @@
 #! /usr/bin/env python
-# -*- python -*-
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2014, 2017 Peter Williams
+# Licensed under the MIT License.
 
 """Read the dictionary into a Bloom filter and save the filter
 state for quick loading later."""
 
-import gzip, cPickle
+from __future__ import absolute_import, division, print_function
+
+import gzip
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 import bloom
+
 
 # This stuff is specific to Peter's machine: the dictionary contains about
 # 479000 words and lives in the standard Unixy location.
 
-bf = bloom.optimalBloom (0.05, 479000)
+bf = bloom.optimal_bloom(0.05, 479000)
 
-for line in file ('/usr/share/dict/words'):
-    bf.add (line.strip ())
+for line in file('/usr/share/dict/words'):
+    bf.add(line.strip())
 
-cPickle.dump (bf, gzip.GzipFile ('dictbf.dat.gz', 'wb', 9))
+pickle.dump(bf, gzip.GzipFile('dictbf.dat.gz', 'wb', 9))

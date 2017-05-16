@@ -68,7 +68,7 @@ import hashlib
 from six import binary_type
 
 
-def makeHashFunc(m, salt):
+def make_hash_func(m, salt):
     """Return a *function* that hashes an input value. The function that
     we return takes a string argument and returns an integer between 0 and
     m, noninclusive. Our arguments are m, and a "salt" value that we mix
@@ -119,7 +119,7 @@ class BloomFilter(object):
 
         self.bits = np.zeros(m // 32, dtype=np.uint32)
         self.n = 0
-        self.funcs = [makeHashFunc(m, i) for i in range(k)]
+        self.funcs = [make_hash_func(m, i) for i in range(k)]
 
 
     def fprate(self):
@@ -144,7 +144,7 @@ class BloomFilter(object):
         self.n += 1
 
 
-    def maycontain(self, item):
+    def may_contain(self, item):
         for func in self.funcs:
             n = func(item)
             dword = n // 32
@@ -172,10 +172,10 @@ class BloomFilter(object):
     def __setstate__(self, state):
         self.k, self.n, self.bits = state
         self.m = self.bits.size * 32
-        self.funcs = [makeHashFunc(self.m, i) for i in range(self.k)]
+        self.funcs = [make_hash_func(self.m, i) for i in range(self.k)]
 
 
-def optimalBloom(fprate, nexpected):
+def optimal_bloom(fprate, nexpected):
     """Create and return a well-optimized Bloom filter given a desired
     false-positive rate and an expected number of items to be added to
     the filter. This involves figuring out the optimal number of bits
