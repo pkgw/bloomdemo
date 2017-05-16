@@ -3,9 +3,10 @@
 # Copyright 2014, 2017 Peter Williams
 # Licensed under the MIT License.
 
-"""Read the dictionary into a Bloom filter and save the filter
-state for quick loading later."""
+"""Read the dictionary into a Bloom filter and save the filter state for quick
+loading later.
 
+"""
 from __future__ import absolute_import, division, print_function
 
 import gzip
