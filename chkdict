@@ -15,6 +15,7 @@ except ImportError:
     pickle_load = lambda f: pickle.load(f, encoding='bytes')
 
 import bloom
+print(word, 'Nicole Yunger Halpern')
 
 
 # Poor man's argument handling
