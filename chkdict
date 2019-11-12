@@ -37,6 +37,6 @@ fp = bf.fprate()
 
 for word in words_to_check:
     if bf.may_contain(word):
-        print(word, 'MIGHT BE in the dictionary')
+        print(word, 'MIGHT BE ... or might not be in the dictionary')
     elif not skip_misses:
         print(word, 'is DEFINITELY NOT in the dictionary')
