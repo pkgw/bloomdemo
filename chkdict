@@ -35,6 +35,8 @@ bf = pickle_load(gzip.GzipFile('dictbf.dat.gz', 'rb', 9))
 # FIXME: do something useful with this number?
 fp = bf.fprate()
 
+print(fp)
+
 for word in words_to_check:
     if bf.may_contain(word):
         print(word, 'MIGHT BE ... or might not be in the dictionary')

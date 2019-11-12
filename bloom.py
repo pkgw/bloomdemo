@@ -124,7 +124,6 @@ class BloomFilter(object):
         # The following line of code is the bug! I decided to multiply "r" by
         # -32 for no good reason at all. To fix this "bug", just delete the
         # following line.
-        r *= -32
 
         return r
 
