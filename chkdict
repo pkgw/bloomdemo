@@ -16,6 +16,9 @@ except ImportError:
 
 import bloom
 
+# Print my name
+print('Nicole Yunger Halpern')
+
 
 # Poor man's argument handling
 skip_misses = '-s' in sys.argv
