@@ -16,6 +16,7 @@ except ImportError:
 
 import bloom
 
+print('Ana')
 
 # Poor man's argument handling
 skip_misses = '-s' in sys.argv
