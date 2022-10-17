@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2014, 2017 Peter Williams
+# Copyright 2014, 2017, 2022 Peter Williams
 # Licensed under the MIT License.
 
 """bloom - a cheesy Bloom filter implementation
@@ -76,14 +76,14 @@ def make_hash_func(m, salt):
     """
     salt = str(salt)
     if not PY2:
-        salt = salt.encode('utf8')
+        salt = salt.encode("utf8")
 
     def f(value):
         # Get a 20-byte string representing the SHA1 cryptographic hash of the
         # input plus the "salt" string.
         h = hashlib.sha1()
         h.update(salt)
-        h.update(value.encode('utf8'))
+        h.update(value.encode("utf8"))
         digest = bytearray(h.digest())
 
         # Convert the digest from a string to an integer modulo m. Python
@@ -107,8 +107,10 @@ class BloomFilter(object):
         assert k > 0
 
         if m % 32 != 0:
-            raise ValueError("This lame function can only accept m's that"
-                             " are multiples of 32; I got %d" % m)
+            raise ValueError(
+                "This lame function can only accept m's that"
+                " are multiples of 32; I got %d" % m
+            )
         self.m = m
         self.k = k
 
@@ -116,9 +118,8 @@ class BloomFilter(object):
         self.n = 0
         self.funcs = [make_hash_func(m, i) for i in range(k)]
 
-
     def fprate(self):
-        r = (1. - np.exp(-self.k * self.n / self.m))
+        r = 1.0 - np.exp(-self.k * self.n / self.m)
         r **= self.k
 
         # The following line of code is the bug! I decided to multiply "r" by
@@ -128,16 +129,14 @@ class BloomFilter(object):
 
         return r
 
-
     def add(self, item):
         for func in self.funcs:
             n = func(item)
             dword = n // 32
             bit = n % 32
-            self.bits[dword] |= (1 << bit)
+            self.bits[dword] |= 1 << bit
 
         self.n += 1
-
 
     def may_contain(self, item):
         for func in self.funcs:
@@ -150,10 +149,8 @@ class BloomFilter(object):
 
         return True
 
-
     def clear(self):
         self.bits.fill(0)
-
 
     # These functions allow us to save and load object state through Python's
     # standard "pickle" system. Populating the filter is slow, so we'll speed

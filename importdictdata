@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2014, 2017 Peter Williams
+# Copyright 2014, 2017, 2022 Peter Williams
 # Licensed under the MIT License.
 
 """Read the dictionary into a Bloom filter and save the filter state for quick
@@ -10,6 +10,7 @@ loading later.
 from __future__ import absolute_import, division, print_function
 
 import gzip
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -23,7 +24,7 @@ import bloom
 
 bf = bloom.optimal_bloom(0.05, 479000)
 
-for line in file('/usr/share/dict/words'):
+for line in file("/usr/share/dict/words"):
     bf.add(line.strip())
 
-pickle.dump(bf, gzip.GzipFile('dictbf.dat.gz', 'wb', 9))
+pickle.dump(bf, gzip.GzipFile("dictbf.dat.gz", "wb", 9))
