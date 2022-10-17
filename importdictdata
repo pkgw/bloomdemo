@@ -7,8 +7,6 @@
 loading later.
 
 """
-from __future__ import absolute_import, division, print_function
-
 import gzip
 
 try:
@@ -24,7 +22,7 @@ import bloom
 
 bf = bloom.optimal_bloom(0.05, 479000)
 
-for line in file("/usr/share/dict/words"):
+for line in open("/usr/share/dict/words"):
     bf.add(line.strip())
 
 pickle.dump(bf, gzip.GzipFile("dictbf.dat.gz", "wb", 9))

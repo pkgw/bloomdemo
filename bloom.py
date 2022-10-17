@@ -56,10 +56,8 @@ Given n, a desired p, and the desire to use the optimal k,
 
 """
 
-from __future__ import absolute_import, division, print_function
 import numpy as np
 import hashlib
-from six import PY2, binary_type
 
 
 def make_hash_func(m, salt):
@@ -74,9 +72,7 @@ def make_hash_func(m, salt):
     about optimizing how this is done.
 
     """
-    salt = str(salt)
-    if not PY2:
-        salt = salt.encode("utf8")
+    salt = str(salt).encode("utf8")
 
     def f(value):
         # Get a 20-byte string representing the SHA1 cryptographic hash of the
